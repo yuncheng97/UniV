@@ -96,4 +96,4 @@ class Res2Net(nn.Module):
 
 
 def Res2Net50():
-    return Res2Net([3, 4, 6, 3], '/220019054/FLA-Net/pretrained/res2net50_v1b_26w_4s-3cf99910.pth')
+    return Res2Net([3, 4, 6, 3], 'res2net50_v1b_26w_4s-3cf99910.pth')

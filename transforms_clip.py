@@ -12,6 +12,20 @@ import torchvision.transforms.functional as F
 from PIL import Image
 from numpy import random as rand
 
+
+def resolve_interpolation(interpolation):
+    if isinstance(interpolation, T.InterpolationMode):
+        return interpolation
+    mapping = {
+        'nearest': T.InterpolationMode.NEAREST,
+        'bilinear': T.InterpolationMode.BILINEAR,
+        'bicubic': T.InterpolationMode.BICUBIC,
+    }
+    if interpolation not in mapping:
+        raise ValueError(f'Unsupported interpolation: {interpolation}')
+    return mapping[interpolation]
+
+
 def bbox_overlaps(bboxes1, bboxes2, mode='iou', eps=1e-6):
     assert mode in ['iou', 'iof']
     bboxes1 = bboxes1.astype(np.float32)
@@ -401,23 +415,25 @@ class ToTensor(object):
 
         return tensor_images, tensor_targets, tensor_maps
 
-def resize(images, targets, maps, size):
+def resize(images, targets, maps, size, image_interpolation):
+    image_interpolation = resolve_interpolation(image_interpolation)
     rescaled_images = []
     rescaled_targets = []
     rescaled_maps = []
     for image, target, map in zip(images, targets, maps):
-        rescaled_images.append(F.resize(image, (size,size)))
-        rescaled_targets.append(F.resize(target, (size,size)))
-        rescaled_maps.append(F.resize(map, (size,size)))
+        rescaled_images.append(F.resize(image, (size, size), interpolation=image_interpolation))
+        rescaled_targets.append(F.resize(target, (size, size), interpolation=T.InterpolationMode.NEAREST))
+        rescaled_maps.append(F.resize(map, (size, size), interpolation=T.InterpolationMode.NEAREST))
 
     return rescaled_images, rescaled_targets, rescaled_maps
 
 class Resize(object):
-    def __init__(self, size):
+    def __init__(self, size, image_interpolation='bilinear'):
         self.size = size
+        self.image_interpolation = image_interpolation
 
     def __call__(self, images, targets, maps):
-        images, targets, maps = resize(images, targets, maps, self.size)
+        images, targets, maps = resize(images, targets, maps, self.size, self.image_interpolation)
         return images, targets, maps
 
 def hflip(images, targets, maps):

@@ -1,9 +1,246 @@
-*.pyc
-*.jpg
-*.pth
-events.out.*
+# =============================================================================
+# UniV .gitignore
+# Goal: keep only core source code and the minimum files needed to use the
+# project; exclude build artifacts, caches, datasets, weights, logs, editor /
+# OS junk, and other non-source material.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Python build artifacts & caches
+# -----------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+*.egg-info
+*.egg
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+.coverage.*
+.cache/
+.pyre/
+
+# -----------------------------------------------------------------------------
+# Virtual environments
+# -----------------------------------------------------------------------------
+venv/
+.venv/
+env/
+.python-version
+pip-wheel-metadata/
+
+# -----------------------------------------------------------------------------
+# Environment / secrets (keep `.env.example` if present)
+# -----------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# -----------------------------------------------------------------------------
+# IDE / Editor configs
+# -----------------------------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.settings/
+*.iml
+
+# -----------------------------------------------------------------------------
+# OS generated files
+# -----------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# -----------------------------------------------------------------------------
+# Logs & training-time runtime output
+# -----------------------------------------------------------------------------
 *.log
-*.json
-*.txt
-*.sh
+logs/
+runs/
+tb_logs/
+tensorboard_logs/
+events.out.*
+*.out
+*.err
+
+# -----------------------------------------------------------------------------
+# Datasets & data folders
+# -----------------------------------------------------------------------------
+data/
+datasets/
+Data/
+# Specifically exclude the legacy data utility
 data/utils.py
+
+# -----------------------------------------------------------------------------
+# Pretrained weights, checkpoints & serialized models
+# -----------------------------------------------------------------------------
+pretrained/
+checkpoints/
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+*.h5
+*.hdf5
+*.pkl
+*.pkl.gz
+*.pickle
+*.onnx
+*.bin
+*.tflite
+*.pb
+*.ptlk
+*.mar
+
+# -----------------------------------------------------------------------------
+# Project-specific output / figure / visualization directories
+# (relative to this .gitignore, which lives in UniV/)
+# -----------------------------------------------------------------------------
+results/
+output/
+outputs/
+visualization/
+figures/
+figs/
+rebuttal_longrange/
+refine-logs/
+
+# -----------------------------------------------------------------------------
+# Binary / media / archive / temp files
+# -----------------------------------------------------------------------------
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.webp
+*.svg
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.wav
+*.mp3
+*.flac
+*.npy
+*.npz
+*.mat
+*.parquet
+*.feather
+*.arrow
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.rar
+*.7z
+*.gz
+*.bz2
+*.xz
+*.bak
+*.tmp
+*.temp
+*~
+
+# -----------------------------------------------------------------------------
+# Generated config / label / doc artifacts
+# -----------------------------------------------------------------------------
+*.json
+*.tex
+*.aux
+*.bbl
+*.blg
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.toc
+*.lof
+*.lot
+*.out
+
+# -----------------------------------------------------------------------------
+# Jupyter notebooks
+# -----------------------------------------------------------------------------
+*.ipynb_checkpoints/
+.ipynb_checkpoints/
+
+# -----------------------------------------------------------------------------
+# Node / web dependencies (defensive — only if added later)
+# -----------------------------------------------------------------------------
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# -----------------------------------------------------------------------------
+# Vendor (third-party vendored codebases)
+# -----------------------------------------------------------------------------
+vendor/
+
+# -----------------------------------------------------------------------------
+# Shell scripts (whitelist scripts/ below)
+# -----------------------------------------------------------------------------
+*.sh
+!scripts/*.sh
+
+# -----------------------------------------------------------------------------
+# Text / data label files (whitelist requirment.txt below)
+# -----------------------------------------------------------------------------
+*.txt
+!requirment.txt
+
+# -----------------------------------------------------------------------------
+# Markdown (whitelist README.md and segmentation_models_pytorch docs below)
+# -----------------------------------------------------------------------------
+*.md
+!README.md
+
+# -----------------------------------------------------------------------------
+# Project-specific top-level files that should not be tracked
+# -----------------------------------------------------------------------------
+cas-sc-template.tex
+FIGURE_DRAWING_PLAN_REVISED.md
+FIGURE_DRAWING_PLAN.md
+lata_flowchart.md
+uatssm_flowchart.md
+famh_flowchart.md
+
+# =============================================================================
+# Whitelist: keep the core project files that are essential for using UniV
+# =============================================================================
+!.gitignore
+!.gitattributes
+!README.md
+!LICENSE
+!environment.yaml
+!requirment.txt
+!scripts/
+!scripts/*.sh
+!scripts/*.py
+!segmentation_models_pytorch/
+!segmentation_models_pytorch/**/*.py

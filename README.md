@@ -1,11 +1,17 @@
-## [Towards a Benchmark for Colorectal Cancer Segmentation in Endorectal Ultrasound Videos: Dataset and Model Development](https://arxiv.org/abs/2408.10067)
+## UniV: Unified Consistency-Driven ERUS Video Multi-Task Learning
 by Yuncheng Jiang, Yiwen Hu, Zixun Zhang, Jun Wei, Chun-Mei Feng, Xuemei Tang, Xiang Wan, Yong Liu, Shuguang Cui, Zhen Li
 
 ---
 
 ## :sparkles: Introduction
 ![framework](./figs/framework.png) 
-Endorectal ultrasound (ERUS) is an important imaging modality that provides high reliability for diagnosing the depth and boundary of invasion in colorectal cancer. However, the lack of a large-scale ERUS dataset with high-quality annotations hinders the development of automatic ultrasound diagnostics. In this paper, we collected and annotated the first benchmark dataset that covers diverse ERUS scenarios, *i.e.* colorectal cancer segmentation, detection, and infiltration depth staging. Our ERUS-10K dataset comprises 77 videos and 10,000 high-resolution annotated frames. Based on this dataset, we further introduce a benchmark model for colorectal cancer segmentation, named the **A**daptive **S**parse-context **TR**ansformer (**ASTR**). ASTR is designed based on three considerations: scanning mode discrepancy, temporal information, and low computational complexity. For generalizing to different scanning modes, the adaptive scanning-mode augmentation is proposed to convert between raw sector images and linear scan ones. For mining temporal information, the sparse-context transformer is incorporated to integrate inter-frame local and global features. For reducing computational complexity, the sparse-context block is introduced to extract contextual features from auxiliary frames. Finally, on the benchmark dataset, the proposed ASTR model achieves a 77.6% Dice score in rectal cancer segmentation, largely outperforming previous state-of-the-art methods. 
+This repository now implements **UniV**, an upgraded end-to-end framework for ERUS video analysis with joint **frame-level lesion segmentation** and **video-level T-stage classification**. UniV replaces the earlier ASTR-specific heuristic pipeline with:
+
+- **FAMH**: learnable frequency-adaptive mode harmonization instead of offline scan-mode conversion
+- **UATSSM + LATA**: PyTorch-compatible ultrasound-aware temporal modeling and lesion-aware video aggregation
+- **CTSI**: cross-task synergy between segmentation and classification with video-level consistency
+
+The default code path uses `Data/ERUS/video_labels.txt` for 5-way T-stage supervision and geometry-based pseudo labels for scan mode.
 
 ## :mag: Prerequisites
 ---
@@ -46,63 +52,80 @@ mkdir pretrained/
 you can also download our [pretrained model checkpoint](https://drive.google.com/file/d/1hM7vZuKroNqbO0gaZiQVAP4xcSLXTjHW/view?usp=sharing) on ERUS-10K for evaluation.
 
 
-### Generate augmented dataset
-Generate the augmented dataset by *adaptive scanning model augmentation*
-
-You can use the code to generate the augmented data. Please noted that you need to specify each image as "linear" or "convex"
-
-```shell
-python scan_mode_convert.py
-```
+### Legacy mode conversion
+`scan_mode_convert.py` is kept as a legacy tool, but UniV no longer depends on offline scan-mode augmentation during training.
 ---
 
 
 ## :rocket: Training and evaluation
 Set your own training configuration before training.
 
-**Training on single node**
+**Recommended shell entrypoint**
 ```shell
-    python train.py \
-        --gpu_id '0' \
-        --batchsize 12 \
-        --lr 0.0001 \
-        --data_root ./data \
-        --train_size 352 \
-        --clip_size  3 \
-        --backbone res2net50 \
-        --scheduler cos \
-        --optimizer adamw \
-        --epoch 24 \
-        --note your_own_experiment_note \
+bash scripts/train.sh
 ```
 
-**Training on multile nodes**
+Useful environment overrides:
 ```shell
-python -m torch.distributed.launch --nproc_per_node=2 --master_port=29500 -use_env train.py  \
-        --gpu_id '0,1' \
-        --batchsize 12 \
-        --lr 0.0001 \
-        --data_root ./data \
-        --train_size 352 \
-        --clip_size  3 \
-        --backbone res2net50 \
-        --scheduler cos \
-        --optimizer adamw \
-        --epoch 24 \
-        --distributed \
-        --note your_own_experiment_note \
+DATA_ROOT=../Data/ERUS \
+OUTPUT_ROOT=./results \
+BACKBONE=res2net50 \
+TRAIN_SIZE=352 \
+CLIP_SIZE=3 \
+BATCH_SIZE=2 \
+EPOCHS=20 \
+GPU_ID=0 \
+NOTE=univ_run \
+bash scripts/train.sh
+```
+
+**Training on single node**
+```shell
+python train.py \
+    --gpu_id 0 \
+    --batchsize 2 \
+    --lr 0.0001 \
+    --data_root ../Data/ERUS \
+    --train_size 352 \
+    --clip_size 3 \
+    --backbone res2net50 \
+    --scheduler cos \
+    --optimizer adamw \
+    --epoch 20 \
+    --use_mode_pseudo_labels \
+    --eval_split val \
+    --note univ_run
+```
+
+**Minimal smoke train**
+```shell
+python train.py \
+    --gpu_id 0 \
+    --data_root ../Data/ERUS \
+    --backbone res2net50 \
+    --train_size 64 \
+    --clip_size 3 \
+    --batchsize 1 \
+    --epoch 1 \
+    --num_workers 0 \
+    --limit_train_batches 2 \
+    --limit_val_batches 1 \
+    --use_mode_pseudo_labels \
+    --note smoke
 ```
 
 
 **Evaluation**
 ```shell
 python eval.py \
-        --gpu_id '0' \
-        --data_root ./data \
-        --train_size 352 \
-        --clip_size  3 \
-        --resume  your_own_trained_model_weight \
-        --task Quantitative_or_Qualitative_eval_task \
+    --gpu_id 0 \
+    --data_root ../Data/ERUS \
+    --train_size 352 \
+    --clip_size 3 \
+    --resume ./results/univ_run/log_xxx \
+    --eval_split test \
+    --task both \
+    --use_mode_pseudo_labels
 ```
 
 ## :pray: Acknowledgement
@@ -118,5 +141,4 @@ This code of repository is built on [FLA-Net](https://github.com/jhl-Det/FLA-Net
   year={2024}
 }
 ```
-
 

@@ -1,4 +1,5 @@
 import os
+import subprocess
 import torch
 import numpy as np
 import torch.nn.functional as F
@@ -105,9 +106,17 @@ def init_distributed_mode(args):
     args.dist_backend = 'nccl'
     print('| distributed init (rank {}): {}'.format(
         args.rank, args.dist_url), flush=True)
-    torch.distributed.init_process_group(backend=args.dist_backend,
-                                         init_method=args.dist_url,
-                                         world_size=args.world_size,
-                                         rank=args.rank)
-    torch.distributed.barrier()
+    init_pg_kwargs = dict(
+        backend=args.dist_backend,
+        init_method=args.dist_url,
+        world_size=args.world_size,
+        rank=args.rank,
+    )
+    if torch.cuda.is_available():
+        init_pg_kwargs["device_id"] = torch.device("cuda", args.gpu)
+    torch.distributed.init_process_group(**init_pg_kwargs)
+    if torch.cuda.is_available():
+        torch.distributed.barrier(device_ids=[args.gpu])
+    else:
+        torch.distributed.barrier()
     setup_for_distributed(args.rank == 0)
