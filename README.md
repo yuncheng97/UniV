@@ -1,71 +1,89 @@
-## UniV: Unified Consistency-Driven ERUS Video Multi-Task Learning
-by Yuncheng Jiang, Yiwen Hu, Zixun Zhang, Jun Wei, Chun-Mei Feng, Xuemei Tang, Xiang Wan, Yong Liu, Shuguang Cui, Zhen Li
+<div align="center">
+
+# UniV: Frequency-Harmonized and Lesion-Aware State Space Learning for Unified Ultrasound Video Segmentation and Diagnosis
+
+**Yuncheng Jiang** · Yiwen Hu · Zixun Zhang · Jun Wei · Chun-Mei Feng · Xuemei Tang · Xiang Wan · Yong Liu · Shuguang Cui · Zhen Li
+
+</div>
 
 ---
 
 ## :sparkles: Introduction
-![framework](./figs/framework.png) 
-This repository now implements **UniV**, an upgraded end-to-end framework for ERUS video analysis with joint **frame-level lesion segmentation** and **video-level T-stage classification**. UniV replaces the earlier ASTR-specific heuristic pipeline with:
 
-- **FAMH**: learnable frequency-adaptive mode harmonization instead of offline scan-mode conversion
-- **UATSSM + LATA**: PyTorch-compatible ultrasound-aware temporal modeling and lesion-aware video aggregation
-- **CTSI**: cross-task synergy between segmentation and classification with video-level consistency
+![framework](./figs/framework.png)
+
+**UniV** is a unified end-to-end framework for ultrasound video analysis, jointly performing **frame-level lesion segmentation** and **video-level diagnosis**. The framework introduces:
+
+- **FAMH** (Frequency-Adaptive Mode Harmonization): learnable frequency-domain harmonization that replaces offline scan-mode conversion
+- **UATSSM** (Ultrasound-Aware Temporal State Space Model): PyTorch-compatible temporal modeling tailored for ultrasound video characteristics
+- **LATA** (Lesion-Aware Temporal Aggregation): adaptive video-level feature aggregation with lesion-aware weighting
+- **CTSI** (Cross-Task Synergy Integration): bidirectional information flow between segmentation and diagnosis tasks with video-level consistency
 
 The default code path uses `Data/ERUS/video_labels.txt` for 5-way T-stage supervision and geometry-based pseudo labels for scan mode.
 
 ## :mag: Prerequisites
----
+
 ### Clone repository
 
 ```shell
 # clone project
-git clone https://github.com/yuncheng97/ASTR.git
-cd ASTR/
+git clone https://github.com/yuncheng97/UniV.git
+cd UniV/
 
 # create conda environment and install dependencies
 conda env create -f environment.yaml
-conda activate ASTR
+conda activate UniV
 ```
 
-### Download dataset
-This database is available for only non-commercial use in research or educational purpose. As long as you use the database for these purposes, you can edit or process images and annotations in this database. Please sign the [license agreement](figs/ERUS-License.pdf) and send it to yuncheng.jiang97@gmail.com to obtain the download link.
+### Datasets
 
-After download the dataset, put the dataset in the "/data" folder
+UniV is evaluated on **4 publicly available ultrasound video datasets**:
 
+| Dataset | Task | Link |
+|---------|------|------|
+| **ERUS** | Colorectal cancer segmentation & T-stage classification | [GitHub](https://github.com/yuncheng97/ASTR) |
+| **JNU-IFM** | Thyroid nodule segmentation | [Figshare](https://figshare.com/articles/dataset/JNU-IFM/14371652) |
+| **ThyroidCineClip** | Thyroid nodule classification | [Stanford AIMI](https://aimi.stanford.edu/datasets/thyroid-ultrasound-cine-clip) |
+| **EchoCP** | Echocardiography segmentation | [GitHub](https://github.com/XiaoweiXu/EchoCP-An-Echocardiography-Dataset-in-Contrast-Transthoracic-Echocardiography-for-PFO-diagnosis/blob/main/README.md) |
+
+After downloading the datasets, place them in the `data/` directory:
 
 ```shell
 mkdir data/
+# Place downloaded datasets here
 ```
 
 ### Download pretrained backbone
 
-download the pretrained backbone weights and put them in the "/pretrained" folder. Then you can train the model on the ERUS-10K or your own dataset from scratch.
+Download the pretrained backbone weights and place them in the `pretrained/` directory. You can then train the model on ERUS-10K or your own dataset from scratch.
+
 - [Res2Net50](https://drive.google.com/file/d/1RzSdIGhM6kR7yJQWHWy8ed7WNhGrt-m3/view?usp=sharing)
 - [PVT_v2_b2](https://drive.google.com/file/d/1I8uPAEzKuI311V_HJpQ7Ppf-LDgi7K_O/view?usp=sharing)
 
 ```shell
 mkdir pretrained/
+# Place downloaded weights here
 ```
 
 ### Download pretrained model (optional)
 
-you can also download our [pretrained model checkpoint](https://drive.google.com/file/d/1hM7vZuKroNqbO0gaZiQVAP4xcSLXTjHW/view?usp=sharing) on ERUS-10K for evaluation.
+You can also download our [pretrained model checkpoint](https://drive.google.com/file/d/1hM7vZuKroNqbO0gaZiQVAP4xcSLXTjHW/view?usp=sharing) on ERUS-10K for evaluation.
 
-
-### Legacy mode conversion
-`scan_mode_convert.py` is kept as a legacy tool, but UniV no longer depends on offline scan-mode augmentation during training.
 ---
 
 
-## :rocket: Training and evaluation
+## :rocket: Training and Evaluation
+
 Set your own training configuration before training.
 
-**Recommended shell entrypoint**
+### Recommended shell entrypoint
+
 ```shell
 bash scripts/train.sh
 ```
 
 Useful environment overrides:
+
 ```shell
 DATA_ROOT=../Data/ERUS \
 OUTPUT_ROOT=./results \
@@ -79,7 +97,8 @@ NOTE=univ_run \
 bash scripts/train.sh
 ```
 
-**Training on single node**
+### Training on single node
+
 ```shell
 python train.py \
     --gpu_id 0 \
@@ -97,7 +116,8 @@ python train.py \
     --note univ_run
 ```
 
-**Minimal smoke train**
+### Minimal smoke test
+
 ```shell
 python train.py \
     --gpu_id 0 \
@@ -114,8 +134,8 @@ python train.py \
     --note smoke
 ```
 
+### Evaluation
 
-**Evaluation**
 ```shell
 python eval.py \
     --gpu_id 0 \
@@ -129,11 +149,14 @@ python eval.py \
 ```
 
 ## :pray: Acknowledgement
-This code of repository is built on [FLA-Net](https://github.com/jhl-Det/FLA-Net) and [segmentation_models_pytorch](https://github.com/qubvel-org/segmentation_models.pytorch). Thanks for their valuble contributions.
+
+This repository is built upon [FLA-Net](https://github.com/jhl-Det/FLA-Net) and [segmentation_models_pytorch](https://github.com/qubvel-org/segmentation_models.pytorch). We thank the authors for their valuable contributions.
 
 ## :book: Citation
-- If you find this work is helpful, please cite our paper
-```
+
+If you find this work helpful, please cite our paper:
+
+```bibtex
 @article{jiang2024towards,
   title={Towards a Benchmark for Colorectal Cancer Segmentation in Endorectal Ultrasound Videos: Dataset and Model Development},
   author={Jiang, Yuncheng and Hu, Yiwen and Zhang, Zixun and Wei, Jun and Feng, Chun-Mei and Tang, Xuemei and Wan, Xiang and Liu, Yong and Cui, Shuguang and Li, Zhen},
@@ -141,4 +164,8 @@ This code of repository is built on [FLA-Net](https://github.com/jhl-Det/FLA-Net
   year={2024}
 }
 ```
+
+## :page_facing_up: License
+
+This project is licensed under the [MIT License](LICENSE).
 
