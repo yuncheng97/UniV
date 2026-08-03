@@ -2,8 +2,6 @@
 
 # UniV: Frequency-Harmonized and Lesion-Aware State Space Learning for Unified Ultrasound Video Segmentation and Diagnosis
 
-**Yuncheng Jiang** · Yiwen Hu · Zixun Zhang · Jun Wei · Chun-Mei Feng · Xuemei Tang · Xiang Wan · Yong Liu · Shuguang Cui · Zhen Li
-
 </div>
 
 ---
@@ -57,17 +55,17 @@ mkdir data/
 
 Download the pretrained backbone weights and place them in the `pretrained/` directory. You can then train the model on ERUS-10K or your own dataset from scratch.
 
-- [Res2Net50](https://drive.google.com/file/d/1RzSdIGhM6kR7yJQWHWy8ed7WNhGrt-m3/view?usp=sharing)
-- [PVT_v2_b2](https://drive.google.com/file/d/1I8uPAEzKuI311V_HJpQ7Ppf-LDgi7K_O/view?usp=sharing)
-
+<!-- - [Res2Net50](https://drive.google.com/file/d/1RzSdIGhM6kR7yJQWHWy8ed7WNhGrt-m3/view?usp=sharing)
+- [PVT_v2_b2](https://drive.google.com/file/d/1I8uPAEzKuI311V_HJpQ7Ppf-LDgi7K_O/view?usp=sharing) -->
+- [DINOv3](https://huggingface.co/docs/transformers/model_doc/dinov3)
 ```shell
 mkdir pretrained/
 # Place downloaded weights here
 ```
 
-### Download pretrained model (optional)
+<!-- ### Download pretrained model (optional)
 
-You can also download our [pretrained model checkpoint](https://drive.google.com/file/d/1hM7vZuKroNqbO0gaZiQVAP4xcSLXTjHW/view?usp=sharing) on ERUS-10K for evaluation.
+You can also download our [pretrained model checkpoint](https://drive.google.com/file/d/1hM7vZuKroNqbO0gaZiQVAP4xcSLXTjHW/view?usp=sharing) on ERUS-10K for evaluation. -->
 
 ---
 
