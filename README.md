@@ -150,7 +150,7 @@ python eval.py \
 
 This repository is built upon [FLA-Net](https://github.com/jhl-Det/FLA-Net) and [segmentation_models_pytorch](https://github.com/qubvel-org/segmentation_models.pytorch). We thank the authors for their valuable contributions.
 
-## :book: Citation
+<!-- ## :book: Citation
 
 If you find this work helpful, please cite our paper:
 
@@ -161,7 +161,7 @@ If you find this work helpful, please cite our paper:
   journal={arXiv preprint arXiv:2408.10067},
   year={2024}
 }
-```
+``` -->
 
 ## :page_facing_up: License
 
